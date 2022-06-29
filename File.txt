@@ -75,13 +75,33 @@ public:
 			cout << endl << endl;
 		}
 	}
+	void spisok() {
+		cout << "Список путых ячеек для дальнейшего выбора начала и конца в лабиринте: " << endl;
+		for (int i = 1; i < N-1; i++)
+		{
+			for (int j = 1; j < M-1; j++)
+			{
+				if (POLE[i][j] == 0) cout << "[i] = " << i << " [j] = " << j << endl;
+			}
+		}
+	}
 	void Volna(const int X1, const int Y1, const int X2, const int Y2)
 	{
 		int i, j;
+		string** Put = new string* [this->N];
+		for (i = 0; i < this->N; i++)
+		{
+			Put[i] = new string[this->M];
+		}
+		if (POLE[X1][Y1] == -1 || POLE[X2][Y2] == -1) {
+			cout << "Неверно подобраны координаты для входа или выхода лабиринта";
+			return;
+		}
 		POLE[X1][Y1] = -2;
 		POLE[X2][Y2] = -3;
 
 		int shag = 1;
+		int count = 0;
 		bool a = true;
 		while (a) {
 			a = false;
@@ -96,6 +116,7 @@ public:
 							{
 								if (POLE[z][g] == 0 || POLE[z][g] == -3) {
 									POLE[z][g] = shag;
+									count++;
 									a = true;
 								}
 							}
@@ -105,6 +126,7 @@ public:
 			}
 			shag++;
 		}
+		cout << "Кол-во пройденных ячеек: " << count << endl;
 		if (POLE[X2][Y2] == -3) {
 			cout << "Выход не найден!" << endl;
 			return;
@@ -135,12 +157,39 @@ public:
 					i++;
 				}
 			}
-		}	
-		for (int i = 0; i < N; i++)
+		}
+		for (i = 0; i < N; i++)
 		{
-			for (int j = 0; j < M; j++)
+			for (j = 0; j < M; j++)
 			{
-				cout << POLE[i][j] << "\t ";
+				switch (POLE[i][j])
+				{
+				case -1:
+					Put[i][j] = 'X';
+					break;
+				case -4:
+					Put[i][j] = '*';
+					break;
+				default:
+					int dig;
+					char c;
+					while (POLE[i][j] != 0) {
+						dig = POLE[i][j] % 10;
+						POLE[i][j] /= 10;
+						c = (char)(dig + 48);
+						Put[i][j] = c + Put[i][j];
+					}
+					break;
+				}
+			}
+		}
+		Put[X1][Y1] = 'A';
+		Put[X2][Y2] = 'B';
+		for (i = 0; i < N; i++)
+		{
+			for (j = 0; j < M; j++)
+			{
+				cout << Put[i][j] << "\t  ";
 			}
 			cout << endl << endl;
 		}
@@ -161,6 +210,7 @@ int main()
 	L1.Create_lab();
 	cout << "Массив для построения карты: " << endl << endl;
 	L1.write();
+	L1.spisok();
 	int X1, Y1, X2, Y2;
 	cout << "Введите координаты начала и конца лабиринта:\nX1 = ";
 	cin >> X1;
